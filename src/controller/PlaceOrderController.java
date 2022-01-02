@@ -18,7 +18,8 @@ import entity.order.OrderMedia;
 import views.screen.popup.PopupScreen;
 
 /**
- * This class controls the flow of place order use case in our AIMS project
+ * This class controls the flow of place order usecase in our AIMS project
+ * @author nguyenlm
  */
 public class PlaceOrderController extends BaseController{
 
@@ -28,7 +29,7 @@ public class PlaceOrderController extends BaseController{
     private static Logger LOGGER = utils.Utils.getLogger(PlaceOrderController.class.getName());
 
     /**
-     * This method checks the availability of product when user click PlaceOrder button
+     * This method checks the avalibility of product when user click PlaceOrder button
      * @throws SQLException
      */
     public void placeOrder() throws SQLException{
@@ -40,8 +41,7 @@ public class PlaceOrderController extends BaseController{
      * @return Order
      * @throws SQLException
      */
-    @SuppressWarnings("unchecked")
-	public Order createOrder() throws SQLException{
+    public Order createOrder() throws SQLException{
         Order order = new Order();
         for (Object object : Cart.getCart().getListMedia()) {
             CartMedia cartMedia = (CartMedia) object;
@@ -68,11 +68,10 @@ public class PlaceOrderController extends BaseController{
      * @throws InterruptedException
      * @throws IOException
      */
-    public void processDeliveryInfo(HashMap<String, String> info) throws InterruptedException, IOException{
+    public void processDeliveryInfo(HashMap info) throws InterruptedException, IOException{
         LOGGER.info("Process Delivery Info");
         LOGGER.info(info.toString());
         validateDeliveryInfo(info);
-        
     }
     
     /**
@@ -87,9 +86,10 @@ public class PlaceOrderController extends BaseController{
     
     public boolean validatePhoneNumber(String phoneNumber) {
     	//check the phoneNumber has 10 digits
-    	if(phoneNumber.length() != 10) return false;
-    	
-    	//check phoneNumber contains only number
+    	if(phoneNumber.length()!=10) return false;
+    	//check if phoneNumber doesn't start with 0
+    	if(phoneNumber.charAt(0)!='0') return false;
+    	//check the phoneNumber contains only number
     	try {
     		Integer.parseInt(phoneNumber);
     	}catch(NumberFormatException e){
@@ -99,33 +99,24 @@ public class PlaceOrderController extends BaseController{
     }
     
     public boolean validateName(String name) {
-    	
-    	char[] chars = name.toCharArray();
-
-        for (char c : chars) {
-            if(!Character.isLetter(c)) {
-                return false;
-            }
+    	//special case of under 
+    	if (name == null || name=="") {
+            return false;
         }
-        return true;
-    	
+    	//check if name contains only a-z,A-Z
+    	Pattern validator = Pattern.compile("^[a-zA-Z\s]*$");
+        Matcher m = validator.matcher(name);
+        return m.matches();
     }
     
     public boolean validateAddress(String address) {
-		if (address == null || address.trim().isEmpty()) {
-	        System.out.println("Incorrect format of string");
-	        return false;
-	     }
-		Pattern letter = Pattern.compile("[a-zA-z]");
-	    Pattern digit = Pattern.compile("[0-9]");
-	    Pattern special = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
-	     
-        Matcher hasLetter = letter.matcher(address);
-        Matcher hasDigit = digit.matcher(address);
-        Matcher hasSpecial = special.matcher(address);
-
-        return hasLetter.find() && hasDigit.find() && !hasSpecial.find();
-   
+    	//
+    	if(address==null || address =="") {
+    		return false;
+    	}
+    	Pattern validator = Pattern.compile("^[a-zA-Z0-9\s]*$");
+    	Matcher m = validator.matcher(address);
+    	return m.matches();
     }
     
 

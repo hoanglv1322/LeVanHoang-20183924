@@ -16,13 +16,13 @@ public class Configs {
 
 	// demo data
 	public static final String POST_DATA = "{"
-			+ " \"secretKey\": \"BUXj/7/gHHI=\" ,"
+			+ " \"secretKey\": \"BUvMERwIr+4=\" ,"
 			+ " \"transaction\": {"
 			+ " \"command\": \"pay\" ,"
-			+ " \"cardCode\": \"118609_group1_2020\" ,"
-			+ " \"owner\": \"Group 1\" ,"
-			+ " \"cvvCode\": \"185\" ,"
-			+ " \"dateExpried\": \"1125\" ,"
+			+ " \"cardCode\": \"kscq1_group5_2021\" ,"
+			+ " \"owner\": \"Group 5\" ,"
+			+ " \"cvvCode\": \"864\" ,"
+			+ " \"dateExpired\": \"1125\" ,"
 			+ " \"transactionContent\": \"Pei debt\" ,"
 			+ " \"amount\": 50000 "
 			+ "}"
@@ -41,6 +41,8 @@ public class Configs {
 	public static final String IMAGE_PATH = "assets/images";
 	public static final String INVOICE_SCREEN_PATH = "/views/fxml/invoice.fxml";
 	public static final String INVOICE_MEDIA_SCREEN_PATH = "/views/fxml/media_invoice.fxml";
+	public static final String RUSH_ORDER_INVOICE_SCREEN_PATH = "/views/fxml/rush_order_invoice.fxml";
+	public static final String RUSH_ORDER_SHIPPING_SCREEN_PATH = "/views/fxml/rush_order_shipping.fxml";
 	public static final String PAYMENT_SCREEN_PATH = "/views/fxml/payment.fxml";
 	public static final String RESULT_SCREEN_PATH = "/views/fxml/result.fxml";
 	public static final String SPLASH_SCREEN_PATH = "/views/fxml/splash.fxml";

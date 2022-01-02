@@ -22,59 +22,38 @@ import java.util.logging.Logger;
 import entity.payment.CreditCard;
 import entity.payment.PaymentTransaction;
 
-
 public class API {
 
 	public static DateFormat DATE_FORMATER = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	private static Logger LOGGER = Utils.getLogger(Utils.class.getName());
 
 	/**
-	 * method: call method get to the api
-	 * @param url
-	 * @param token
-	 * @return string response from api
+	 * method to get http
+	 * @param url resource from server
+	 * @param token authenticate
+	 * @return response from server in string format
 	 * @throws Exception
 	 */
 	public static String get(String url, String token) throws Exception {
+		LOGGER.info("Request URL: " + url + "\n");
 		
-		//set up
-		HttpURLConnection conn = setupConnection(url, "GET", token);
+		HttpURLConnection conn = setUpConnection(url,"GET", token);
 		
-		//read response
-		return readResponse(conn);
+		StringBuilder response = readResponse(conn);
+		return response.substring(0, response.length() - 1).toString();
 	}
 
 	/**
-	 * method read data from server return
-	 * @param conn
-	 * @return string from server
-	 * @throws IOException
-	 */
-	private static String readResponse(HttpURLConnection conn) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		String inputLine;
-		StringBuilder respone = new StringBuilder(); // using StringBuilder for the sake of memory and performance
-		while ((inputLine = in.readLine()) != null)
-			System.out.println(inputLine);
-		respone.append(inputLine + "\n");
-		in.close();
-		LOGGER.info("Respone Info: " + respone.substring(0, respone.length() - 1).toString());
-		return respone.substring(0, respone.length() - 1).toString();
-	}
-
-	/**
-	 * method establish connection to server
-	 * @param url
-	 * @param method
-	 * @param token
-	 * @return connection
+	 * @param url to connection
+	 * @param method :type of connection ("PATCH" means post, "GET" means get)
+	 * @param token to authenticate user
+	 * @return return an HttpURLConnection that you can use to connect
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 * @throws ProtocolException
 	 */
-	private static HttpURLConnection setupConnection(String url, String method, String token)
+	private static HttpURLConnection setUpConnection(String url,String method, String token)
 			throws MalformedURLException, IOException, ProtocolException {
-		LOGGER.info("Request URL: " + url + "\n");
 		URL line_api_url = new URL(url);
 		HttpURLConnection conn = (HttpURLConnection) line_api_url.openConnection();
 		conn.setDoInput(true);
@@ -88,31 +67,44 @@ public class API {
 	int var;
 
 	/**
-	 * method call post api
-	 * @param url
-	 * @param data
-	 * @param token
-	 * @return response from server
+	 * @param url to post http
+	 * @param data to send to server throw post method
+	 * @return response from server in string format
 	 * @throws IOException
 	 */
 	public static String post(String url, String data, String token) throws IOException {
 		allowMethods("PATCH");
 		
-		//set up
-		HttpURLConnection conn = setupConnection(url, "POST" ,token);
+		HttpURLConnection conn = setUpConnection(url,"PATCH", token);
 		
 		Writer writer = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
 		writer.write(data);
 		writer.close();
-		
-		//read response
-		return readResponse(conn);
+		StringBuilder response = readResponse(conn);
+		return response.toString();
 	}
 
-	
 	/**
-	 * @param methods
+	 * @param conn HttpURLConnection Object that's created for your connection
+	 * @return response from server in StringBuilder object
+	 * @throws IOException
 	 */
+	private static StringBuilder readResponse(HttpURLConnection conn) throws IOException {
+		BufferedReader in;
+		String inputLine;
+		if (conn.getResponseCode() / 100 == 2) {
+			in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		} else {
+			in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+		}
+		StringBuilder response = new StringBuilder();
+		while ((inputLine = in.readLine()) != null)
+			response.append(inputLine);
+		in.close();
+		LOGGER.info("Respone Info: " + response.toString());
+		return response;
+	}
+
 	private static void allowMethods(String... methods) {
 		try {
 			Field methodsField = HttpURLConnection.class.getDeclaredField("methods");

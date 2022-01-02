@@ -34,7 +34,6 @@ public class InterbankSubsystemController {
 	}
 
 	public PaymentTransaction payOrder(CreditCard card, int amount, String contents) {
-		String token = null;
 		Map<String, Object> transaction = new MyMap();
 
 		try {
@@ -52,7 +51,7 @@ public class InterbankSubsystemController {
 		requestMap.put("version", VERSION);
 		requestMap.put("transaction", transaction);
 
-		String responseText = interbankBoundary.query(Configs.PROCESS_TRANSACTION_URL, generateData(requestMap), token);
+		String responseText = interbankBoundary.query(Configs.PROCESS_TRANSACTION_URL, generateData(requestMap));
 		MyMap response = null;
 		try {
 			response = MyMap.toMyMap(responseText, 0);
@@ -64,6 +63,11 @@ public class InterbankSubsystemController {
 		return makePaymentTransaction(response);
 	}
 
+	/**
+	 * This method make a Payment Transaction and return a PaymentTransaction object entity
+	 * @param response
+	 * @return
+	 */
 	private PaymentTransaction makePaymentTransaction(MyMap response) {
 		if (response == null)
 			return null;

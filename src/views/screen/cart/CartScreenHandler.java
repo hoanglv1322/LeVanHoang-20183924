@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import common.exception.MediaNotAvailableException;
 import common.exception.PlaceOrderException;
 import controller.PlaceOrderController;
+import controller.PlaceRushOrderController;
 import controller.ViewCartController;
 import entity.cart.CartMedia;
 import entity.order.Order;
@@ -24,6 +25,7 @@ import utils.Configs;
 import utils.Utils;
 import views.screen.BaseScreenHandler;
 import views.screen.popup.PopupScreen;
+import views.screen.shipping.RushOrderShippingScreenHandler;
 import views.screen.shipping.ShippingScreenHandler;
 
 public class CartScreenHandler extends BaseScreenHandler {
@@ -131,7 +133,31 @@ public class CartScreenHandler extends BaseScreenHandler {
 			displayCartWithMediaAvailability();
 		}
 	}
+	public void requestToPlaceRushOrder() throws IOException, SQLException {
+		PlaceRushOrderController placeRushOrderController = new PlaceRushOrderController();
+		if (placeRushOrderController.getListCartMedia().size() == 0){
+			PopupScreen.error("You don't have anything to place");
+			return;
+		}
+		placeRushOrderController.placeRushOrder();
+		
+		// display available media
+		displayCartWithMediaAvailability();
 
+		// create order
+		Order order = placeRushOrderController.createOrder();
+
+		// display shipping form
+		RushOrderShippingScreenHandler ShippingScreenHandler = new RushOrderShippingScreenHandler(this.stage, Configs.RUSH_ORDER_SHIPPING_SCREEN_PATH, order);
+		ShippingScreenHandler.setPreviousScreen(this);
+		ShippingScreenHandler.setHomeScreenHandler(homeScreenHandler);
+		ShippingScreenHandler.setScreenTitle("Rush Order Shipping Screen");
+		ShippingScreenHandler.setBController(placeRushOrderController);
+		ShippingScreenHandler.show();
+	}
+	public void onCancelClick() {
+		
+	}
 	public void updateCart() throws SQLException{
 		getBController().checkAvailabilityOfProduct();
 		displayCartWithMediaAvailability();
